@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AHORCADO</title>
+  <style>
+    body {
+      text-align: center;
+      width: 90%;
+      margin: 0 auto;
+    }
+
+    #intento {
+      color: red;
+      font-weight: 900;
+    }
+
+    #palabra {
+      letter-spacing: 0.75em;
+      font-size: 30px;
+      font-weight: 900;
+    }
+
+    #teclado {
+      width: 100%;
+      background-color: ghostwhite;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      text-align: center;
+      padding: 2em 0;
+    }
+
+    input[type='button'],
+    button {
+      font-size: 1.2em;
+      font-weight: 800;
+    }
+
+    .boton-teclado {
+      margin: 0 0.2em;
+    }
+
+    #nuevoJuego {
+      display: none;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>Juguemos al Ahorcado</h1>
+  <h2 id="intento"><span id="intentos"></span> intentos</h2>
+  <p id="palabra"></p>
+  <div id="teclado">
+  </div>
+  <div>
+    <img src="./img/a0.jpg" alt="" id="imagen">
+  </div>
+  <div id="nuevoJuego">
+    <button type="button" onclick="location.reload()">Volver a jugar</button>
+  </div>
+  <!-- 1️⃣ Primero se enlaza el array  -->
+  <script src="./js/palabras.js"></script>
+  <script>
+    // 2️⃣ Después el programa
+    console.clear();
+    const TECLADO = document.getElementById('teclado');
+    const PALABRA = document.getElementById('palabra');
+    const INTENTOS = document.getElementById('intentos');
+    const CLIC = new Audio('clic.mp3');
+    const IMAGEN = document.getElementById('imagen');
+    // ➡️ Se guarda el archivo de sonido en un objeto tipo Audio
+    // https://pixabay.com/es/sound-effects/search/clicks/ 📌
+
+    let palabraAdivinar;
+    let palabraMostrar;
+    let numeroIntentos = 6;
+
+    crearBotones()
+    mostrarPalabra()
+
+    function verificar(letra) {
+      CLIC.play();
+      console.log('Letra pulsada', letra);
+      const BOTON = document.getElementById(letra);
+      let palabraLlenar = '';
+      let adivinada = false;
+      //Bucle for para recorrer la palabra... 🌀
+      for (let i = 0; i < palabraAdivinar.length; i++) {
+        if (palabraAdivinar[i] === letra) {
+          palabraLlenar += letra;
+          adivinada = true;
+        } else {
+          palabraLlenar += palabraMostrar[i];
+        }
+      }
+
+      if (adivinada) {
+        BOTON.style.backgroundColor = 'yellowgreen';
+      } else {
+        BOTON.style.backgroundColor = 'grey';
+        numeroIntentos--;
+        INTENTOS.innerHTML = numeroIntentos;
+      }
+
+      if (numeroIntentos == 6)
+        IMAGEN.src = './img/a0.jpg';
+      else if (numeroIntentos == 5)
+        IMAGEN.src = './img/a1.jpg';
+      else if (numeroIntentos == 4)
+        IMAGEN.src = './img/a2.jpg';
+      else if (numeroIntentos == 3)
+        IMAGEN.src = './img/a3.jpg';
+      else if (numeroIntentos == 2)
+        IMAGEN.src = './img/a4.jpg';
+      else if (numeroIntentos == 1)
+        IMAGEN.src = './img/a5.jpg';
+      else if (numeroIntentos == 0)
+        IMAGEN.src = './img/a6.jpg';
+
+      BOTON.disabled = true;
+      palabraMostrar = palabraLlenar;
+      PALABRA.innerHTML = palabraMostrar;
+
+      console.log('numeroIntentos', numeroIntentos)
+      if (numeroIntentos === 0 || palabraAdivinar == palabraMostrar) {
+        document.getElementById('intento').innerHTML = 'La palabra era ' + palabraAdivinar;
+        TECLADO.style.display = 'none';
+        document.getElementById('nuevoJuego').style.display = 'block';
+      }
+    }
+
+    function crearBotones() {
+      const LETRAS = 'ABCDEFGHIJKLMNÑOPQRSTUVWXYZ';
+      let boton;
+      //Bucle for para crear un botón por letra en la constante LETRAS 🌀
+      for (let i = 0; i < LETRAS.length; i++) {
+        // console.log(LETRAS[i])
+        boton = document.createElement('input');
+        boton.type = 'button'
+        boton.value = LETRAS[i];
+        boton.id = LETRAS[i];
+        boton.classList.add('boton-teclado');
+        // Para el onclick hay que especificarlo así: 📝
+        boton.onclick = function () { verificar(this.value) };
+        TECLADO.appendChild(boton);
+      }
+    }
+
+    function mostrarPalabra() {
+      let numeroLetras = '';
+      let numeroRandom = Math.floor(Math.random() * NUMERO_PALABRAS);
+      console.log('numeroRandom', numeroRandom);
+
+      palabraAdivinar = palabras[numeroRandom];
+      console.log('palabraAdivinar', palabraAdivinar);
+
+      numeroLetras = palabraAdivinar.length;
+      console.log('numeroLetras', numeroLetras);
+
+      palabraMostrar = '_'.repeat(numeroLetras);
+      console.log('palabraMostrar', palabraMostrar);
+
+      PALABRA.innerHTML = palabraMostrar;
+      INTENTOS.innerHTML = numeroIntentos;
+    }
+
+  </script>
+</body>
+
+</html>
